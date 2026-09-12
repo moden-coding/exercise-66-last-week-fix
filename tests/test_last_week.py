@@ -1,30 +1,17 @@
 #!/usr/bin/env python3
 
 import unittest
-from unittest.mock import patch
 import numpy as np
 import pandas as pd
 
-from tmc import points
+from src.last_week import last_week
 
-from tmc.utils import load, get_stdout, patch_helper
-
-module_name="src.last_week"
-last_week = load(module_name, "last_week")
-ph = patch_helper(module_name)
-
-            
 
 class LastWeek(unittest.TestCase):
-
-    # @classmethod
-    # def setUpClass(cls):
-    #     cls.df = last_week()
 
     def setUp(self):
         self.df = last_week()
 
-    @points('p04-15.1')
     def check_column(self, col, correct, nans, column_name):
         for row in range(1, 41):
             if row in nans:
@@ -32,13 +19,11 @@ class LastWeek(unittest.TestCase):
                                 msg="Expected a nan on row %i column %s!" % (row, column_name))
         np.testing.assert_array_equal(col[col.notnull()], correct,
                                       err_msg="Incorrect values in column %s!" % column_name)
-        
-    @points('p04-15.1')
+
     def test_base(self):
         self.assertEqual(len(self.df), 40, msg="Incorrect number of rows!")
         np.testing.assert_array_equal(self.df.Pos, range(1,41), err_msg="Incorrect Pos column!")
 
-    @points('p04-15.1')
     def test_title(self):
         titles=np.array(['I WANT TO HOLD YOUR HAND', 'SHE LOVES YOU',
        'YOU WERE MADE FOR ME', 'SECRET LOVE',
@@ -57,7 +42,6 @@ class LastWeek(unittest.TestCase):
       dtype=object)
         self.check_column(self.df.Title, titles, [35,38,39,40], "Title")
 
-    @points('p04-15.1')
     def test_artist(self):
         artists=np.array(['THE BEATLES', 'THE BEATLES', 'FREDDIE AND THE DREAMERS',
        'KATHY KIRBY', 'DUSTY SPRINGFIELD', 'THE DAVE CLARK FIVE',
@@ -74,7 +58,6 @@ class LastWeek(unittest.TestCase):
        'MATT MONRO', 'CHAD STUART AND JEREMY CLYDE'], dtype=object)
         self.check_column(self.df.Artist, artists, [35,38,39,40], "Artist")
 
-    @points('p04-15.1')
     def test_publisher(self):
         publishers=np.array(['PARLOPHONE', 'PARLOPHONE', 'COLUMBIA', 'DECCA', 'PHILIPS',
        'COLUMBIA', 'PHILIPS', 'COLUMBIA', 'UNITED ARTISTS', 'RCA',
@@ -85,7 +68,6 @@ class LastWeek(unittest.TestCase):
        'EMBER'], dtype=object)
         self.check_column(self.df.Publisher, publishers, [35,38,39,40], "Publisher")
 
-    @points('p04-15.2')
     def test_peak_pos(self):
         pps=np.array([1.0, 1.0, 3.0, 4.0, 5.0, 7.0, 2.0, 5.0, 11.0, 1.0, 4.0, 13.0,
                       17.0, 17.0, 14.0, 20.0, 18.0, 12.0, 20.0, 6.0, 3.0, 26.0, 2.0,
@@ -93,18 +75,15 @@ class LastWeek(unittest.TestCase):
         self.check_column(self.df["Peak Pos"], pps,
                           [6,9,15,16,23,27,29,32, 35, 38,39,40], "Peak Pos")
 
-    @points('p04-15.1')
     def test_woc(self):
         wocs=np.array([ 4., 18.,  8.,  8.,  5.,  6.,  4.,  8.,  4.,  8.,  4., 12.,  8.,
         6.,  4.,  2.,  5.,  3.,  5.,  4.,  6.,  7.,  2.,  5., 13., 14.,
         2.,  4.,  2., 10., 10.,  4.,  7.,  4.,  6.,  3.])
         self.check_column(self.df.WoC, wocs, [35,38,39,40], "WoC")
 
-    @points('p04-15.2')
     def test_lw(self):
         self.check_column(self.df.LW, [], range(1,41), "LW")
 
-        
+
 if __name__ == '__main__':
     unittest.main()
-    
